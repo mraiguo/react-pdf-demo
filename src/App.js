@@ -1,53 +1,29 @@
-import React, { useState } from 'react'
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
-// import { Document, Page } from 'react-pdf'
+import React from 'react'
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { Box } from './box.js'
+import PdfDocument from './pdfDocument.js'
 import './App.css';
 
-function App() {
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
+// todo: 支持拖动到 pdf 上
+// todo: 拖动到pdf上后，需要在pdf上一个副本
+// todo: 在pdf上的支持拖动
+// todo: 在pdf上的支持删除
 
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-  }
+function App() {
   return (
     <div className="App">
-        <Document
-          // style={{position: 'relative'}}
-          onLoadSuccess={onDocumentLoadSuccess}
-          file="https://aiguo-fuzhou.oss-cn-fuzhou.aliyuncs.com/%E9%99%84%E4%BB%B615%E3%80%81%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E5%90%88%E5%90%8C%EF%BC%88%E5%85%A5%E8%81%8C%EF%BC%89%E3%80%90%E6%97%A0%E7%AB%9E%E4%B8%9A%E9%99%90%E5%88%B6%E5%86%85%E5%AE%B9%E7%89%88%E6%9C%AC%E3%80%91202209.pdf">
-            <Page
-              renderTextLayer={false} // 不渲染文本选择层
-              renderAnnotationLayer={false} // 不渲染注释层
-              pageNumber={pageNumber}
-            >
-              <div style={{position: 'absolute', top: '0'  }}>11111</div> 
-            </Page>
-
-          </Document>
-          <div style={{ textAlign: 'center' }}>
-          <p>
-           <button
-              onClick={() => {
-                setPageNumber(pageNumber - 1)
-              }}
-            >
-              上一页
-            </button>
-           <button
-              onClick={() => {
-                setPageNumber(pageNumber + 1)
-              }}
-            >
-              下一页
-            </button>
-          </p>
-          <p>
-            Page {pageNumber} of {numPages}
-          </p>
+      <DndProvider backend={HTML5Backend}>
+        <PdfDocument />
+        <div>
+          <div style={{ overflow: 'hidden', clear: 'both' }}>
+            <Box name="Glass" />
+            <Box name="Banana" />
+            <Box name="Paper" />
           </div>
-
+        </div>
+      </DndProvider>
     </div>
   );
 }
