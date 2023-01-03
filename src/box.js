@@ -9,7 +9,9 @@ const style = {
   cursor: 'move',
   float: 'left',
 }
-export const Box = function Box({ name }) {
+export const Box = function Box(props) {
+  const { name, pdfDives, setPdfDives } = props
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.BOX,
     item: {
@@ -21,6 +23,8 @@ export const Box = function Box({ name }) {
 
       if (item && dropResult) {
         alert(`You dropped ${item.name} into ${dropResult.name}!`)
+        pdfDives.push({ name })
+        setPdfDives(pdfDives)
       }
     },
     collect: (monitor) => ({

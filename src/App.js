@@ -12,15 +12,17 @@ import './App.css';
 // todo: 在pdf上的支持删除
 
 function App() {
+  const [pdfDives, setPdfDives] = React.useState([])
+
   return (
     <div className="App">
       <DndProvider backend={HTML5Backend}>
-        <PdfDocument />
+        <PdfDocument pdfDives={pdfDives} />
         <div>
           <div style={{ overflow: 'hidden', clear: 'both' }}>
-            <Box name="Glass" />
-            <Box name="Banana" />
-            <Box name="Paper" />
+            <Box pdfDives={pdfDives} setPdfDives={setPdfDives} name="Glass" />
+            <Box pdfDives={pdfDives} setPdfDives={setPdfDives} name="Banana" />
+            <Box pdfDives={pdfDives} setPdfDives={setPdfDives} name="Paper" />
           </div>
         </div>
       </DndProvider>
