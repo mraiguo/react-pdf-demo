@@ -71,7 +71,7 @@ function PdfDocument(props) {
           inputRef={drop}
           style={{ border: borderColor }}
           onLoadSuccess={onDocumentLoadSuccess}
-          file="https://aiguo-fuzhou.oss-cn-fuzhou.aliyuncs.com/%E9%99%84%E4%BB%B615%E3%80%81%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E5%90%88%E5%90%8C%EF%BC%88%E5%85%A5%E8%81%8C%EF%BC%89%E3%80%90%E6%97%A0%E7%AB%9E%E4%B8%9A%E9%99%90%E5%88%B6%E5%86%85%E5%AE%B9%E7%89%88%E6%9C%AC%E3%80%91202209.pdf">
+          file="https://aiguo-fuzhou.oss-cn-fuzhou.aliyuncs.com/%E4%BA%8C%E6%89%8B%E6%88%BF%E6%97%A0%E4%B8%AD%E4%BB%8B%E4%B9%B0%E5%8D%96%E5%90%88%E5%90%8C.pdf">
             <Page
               // canvasRef={drop}
               inputRef={pdfBoxDrop}
