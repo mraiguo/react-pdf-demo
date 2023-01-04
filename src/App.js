@@ -9,20 +9,23 @@ import './App.css';
 // todo: 支持拖动到 pdf 上
 // todo: 拖动到pdf上后，需要在pdf上一个副本
 // todo: 在pdf上的支持拖动
-// todo: 在pdf上的支持删除
+// todo: 在pdf上的支持删除（右上角有一个删除小图标或者高亮后按删除键）
 
 function App() {
-  const [pdfDives, setPdfDives] = React.useState([])
+  const [pdfBoxes, setPdfBoxes] = React.useState({
+    a: { top: 20, left: 80, title: 'Drag me around' },
+    b: { top: 180, left: 20, title: 'Drag me too' },
+  })
 
   return (
     <div className="App">
       <DndProvider backend={HTML5Backend}>
-        <PdfDocument pdfDives={pdfDives} />
+        <PdfDocument pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} />
         <div>
           <div style={{ overflow: 'hidden', clear: 'both' }}>
-            <Box pdfDives={pdfDives} setPdfDives={setPdfDives} name="Glass" />
-            <Box pdfDives={pdfDives} setPdfDives={setPdfDives} name="Banana" />
-            <Box pdfDives={pdfDives} setPdfDives={setPdfDives} name="Paper" />
+            <Box pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} name="Glass" />
+            <Box pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} name="Banana" />
+            <Box pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} name="Paper" />
           </div>
         </div>
       </DndProvider>

@@ -1,5 +1,6 @@
 import { useDrag } from 'react-dnd'
 import { ItemTypes } from './ItemTypes.js'
+
 const style = {
   border: '1px dashed gray',
   backgroundColor: 'white',
@@ -9,8 +10,12 @@ const style = {
   cursor: 'move',
   float: 'left',
 }
+
+/**
+ * 合同管理中存放变量和印章的盒子
+ */
 export const Box = function Box(props) {
-  const { name, pdfDives, setPdfDives } = props
+  const { name, pdfBoxes, setPdfBoxes } = props
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.BOX,
@@ -23,8 +28,8 @@ export const Box = function Box(props) {
 
       if (item && dropResult) {
         alert(`You dropped ${item.name} into ${dropResult.name}!`)
-        pdfDives.push({ name })
-        setPdfDives(pdfDives)
+        pdfBoxes[name] = { title: name, top: 0, left: 0 }
+        setPdfBoxes(pdfBoxes)
       }
     },
     collect: (monitor) => ({
