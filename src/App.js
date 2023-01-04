@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { Box } from './box.js'
 import PdfDocument from './pdfDocument.js'
 import './App.css';
+import PdfEdit from './pdfEdit/index.js';
 
 // todo: 支持拖动到 pdf 上
 // todo: 拖动到pdf上后，需要在pdf上一个副本
@@ -18,8 +19,10 @@ function App() {
   })
 
   return (
-    <div className="App">
-      <DndProvider backend={HTML5Backend}>
+    <div className="App" style={{
+      width: '100%',
+    }}>
+      {/* <DndProvider backend={HTML5Backend}>
         <PdfDocument pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} />
         <div>
           <div style={{ overflow: 'hidden', clear: 'both' }}>
@@ -28,7 +31,8 @@ function App() {
             <Box pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} name="Paper" />
           </div>
         </div>
-      </DndProvider>
+      </DndProvider> */}
+      <PdfEdit />
     </div>
   );
 }
