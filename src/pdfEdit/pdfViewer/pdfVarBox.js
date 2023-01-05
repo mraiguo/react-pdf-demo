@@ -4,18 +4,21 @@ const style = {
   position: 'absolute',
   border: '1px dashed gray',
   backgroundColor: 'white',
-  padding: '0.5rem 1rem',
+  padding: '5px',
   cursor: 'move',
+  minWidth: "max-content",
+  boxSizing: "border-box",
 }
 
 /**
  * pdf上可拖拽的变量和印章
  */
-export const PdfVarBox = ({ id, left, top, hideSourceOnDrag, children }) => {
+export const PdfVarBox = ({ id, left, top, width, hideSourceOnDrag, children }) => {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: ItemTypes.BOX,
       item: { id, left, top },
+      hideSourceOnDrag: true,
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
@@ -29,7 +32,7 @@ export const PdfVarBox = ({ id, left, top, hideSourceOnDrag, children }) => {
     <div
       className="box"
       ref={drag}
-      style={{ ...style, left, top }}
+      style={{ ...style, left, top, width }}
       data-testid="box"
     >
       {children}

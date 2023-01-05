@@ -6,12 +6,11 @@ import PdfViewer from './pdfViewer/index.js';
 import { ConfigDrawer } from './configPanel/index.js';
 import { PdfBoxesContext } from './context/pdfBoxesContext.js';
 
-function PdfEdit() {
-  // const [pdfBoxes, setPdfBoxes] = React.useState({
-  //   a: { top: 20, left: 80, title: '公司联系人' },
-  //   b: { top: 180, left: 20, title: '公司地址' },
-  // })
+// TODO: 转换坐标为pdf坐标
+// TODO: 拖过去后内容稍微不跟随鼠标
+// TODO: 拖动过去后的pdf上的变量需要变成预设的宽度
 
+function PdfEdit() {
   const [pdfBoxes, setPdfBoxes] = React.useState([
     { top: 20, left: 80, title: '公司联系人' },
     { top: 180, left: 20, title: '公司地址' },

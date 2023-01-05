@@ -15,7 +15,7 @@ const style = {
  * 合同管理中存放变量和印章的盒子
  */
 export const VarBox = function Box(props) {
-  const { name } = props
+  const { name, width } = props
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.BOX,
@@ -24,25 +24,24 @@ export const VarBox = function Box(props) {
       name,
       left: 0,
       top: 0,
-      test: 'aaaaa'
+      width,
     },
     // options: {
     //   dropEffect: 'copy'
     // },
-    drop: (item, monitor) => {
-      // 获取拖拽结束后的坐标
-      const clientOffset = monitor.getClientOffset()
-      console.log(11111, clientOffset)
+    // drop: (item, monitor) => {
+    //   // 获取拖拽结束后的坐标
+    //   const clientOffset = monitor.getClientOffset()
+    //   console.log(11111, clientOffset)
 
-      return monitor.getClientOffset();
-      // 根据坐标做一些事情，例如移动元素
-    },
+    //   return monitor.getClientOffset();
+    //   // 根据坐标做一些事情，例如移动元素
+    // },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult()
       // monitor.subscribeToOffsetChange(() => {
       //   console.log(1111122, monitor.getClientOffset())
       // })
-      console.log(111222, monitor.getClientOffset())
       if (item && dropResult) {
         // alert(`You dropped ${item.name} into ${dropResult.name}!`)
         // pdfBoxes[name] = { title: name, top: 0, left: 0 }

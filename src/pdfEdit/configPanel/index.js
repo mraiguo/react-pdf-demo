@@ -29,7 +29,7 @@ export const ConfigDrawer = () => {
       }}>
       {
         pdfVars.map((item) => {
-          return <VarBox key={item.name} name={item.name} />
+          return <VarBox key={item.name} name={item.name} width={item.width} />
         })
       }
     </div>

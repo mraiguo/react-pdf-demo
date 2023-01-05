@@ -35,12 +35,12 @@ function PdfViewer(props) {
         const { x, y } = monitor.getClientOffset()
         const left = Math.round(item.left + delta.x)
         const top = Math.round(item.top + delta.y)
-        console.log(1111, monitor.getClientOffset())
 
-        // 从配置面板拖动过来
+        // 从配置面板拖动过来后，需要将配置面板中的数据同步到 pdfBoxes 中
         if (item?.source === 'var') {
           const name = item?.name
-          pdfBoxes[name] = { title: name, top: y, left: x }
+          const width = item?.width
+          pdfBoxes.push({ title: name, top: y, left: x, width })
           setPdfBoxes(pdfBoxes)
         }
 
@@ -93,13 +93,15 @@ function PdfViewer(props) {
               pageNumber={pageNumber}
             >
               {Object.keys(pdfBoxes).map((key) => {
-                const { left, top, title } = pdfBoxes[key]
+                // TODO: 优化
+                const { left, top, title, width } = pdfBoxes[key]
                 return (
                   <PdfVarBox
                     key={key}
                     id={key}
                     left={left}
                     top={top}
+                    width={width}
                   >
                     {title}
                   </PdfVarBox>
