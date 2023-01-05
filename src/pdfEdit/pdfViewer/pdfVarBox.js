@@ -1,5 +1,9 @@
+import { useContext } from 'react';
 import { useDrag } from 'react-dnd'
+import update from 'immutability-helper'
 import { ItemTypes } from '../ItemTypes.js'
+import { PdfBoxesContext } from '../context/pdfBoxesContext';
+
 const style = {
   position: 'absolute',
   border: '1px dashed gray',
@@ -14,6 +18,8 @@ const style = {
  * pdf上可拖拽的变量和印章
  */
 export const PdfVarBox = ({ id, left, top, width, hideSourceOnDrag, children }) => {
+  const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
+
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: ItemTypes.BOX,
@@ -36,6 +42,18 @@ export const PdfVarBox = ({ id, left, top, width, hideSourceOnDrag, children }) 
       data-testid="box"
     >
       {children}
+      <span
+        style={{
+          cursor: 'pointer'
+        }}
+        onClick={() => {
+          setPdfBoxes(
+            update(pdfBoxes, {
+              $splice: [[id, 1]],
+            }),
+          )
+        }}
+      >X</span>
     </div>
   )
 }
