@@ -36,12 +36,18 @@ function PdfViewer(props) {
         const left = Math.round(item.left + delta.x)
         const top = Math.round(item.top + delta.y)
 
+        // TODO: 优化为从ref中拿
+        const pdfViewerRect = document.querySelector('.react-pdf__Page').getBoundingClientRect()
+
         // 从配置面板拖动过来后，需要将配置面板中的数据同步到 pdfBoxes 中
         if (item?.source === 'var') {
           const name = item?.name
           const width = item?.width
-          pdfBoxes.push({ title: name, top: y, left: x, width })
+          const left = Math.round(item.left + x - pdfViewerRect.x)
+          const top = Math.round(item.top + y - pdfViewerRect.y)
+          pdfBoxes.push({ title: name, top, left, width })
           setPdfBoxes(pdfBoxes)
+          return
         }
 
         moveBox(item.id, left, top)
@@ -80,7 +86,6 @@ function PdfViewer(props) {
         flexGrow: 1,
       }}>
         <Document
-          // style={{position: 'relative'}}
           inputRef={drop}
           style={{ border: borderColor }}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -94,7 +99,12 @@ function PdfViewer(props) {
             >
               {Object.keys(pdfBoxes).map((key) => {
                 // TODO: 优化
-                const { left, top, title, width } = pdfBoxes[key]
+                const { left, top, title, width, page } = pdfBoxes[key]
+
+                if (page !== pageNumber) {
+                  return null
+                }
+
                 return (
                   <PdfVarBox
                     key={key}

@@ -8,12 +8,12 @@ import { PdfBoxesContext } from './context/pdfBoxesContext.js';
 
 // TODO: 转换坐标为pdf坐标
 // TODO: 拖过去后内容稍微不跟随鼠标
-// TODO: 拖动过去后的pdf上的变量需要变成预设的宽度
+// TODO: 删除变量
 
 function PdfEdit() {
   const [pdfBoxes, setPdfBoxes] = React.useState([
-    { top: 20, left: 80, title: '公司联系人' },
-    { top: 180, left: 20, title: '公司地址' },
+    { top: 20, left: 80, title: '公司联系人', page: 1 },
+    { top: 180, left: 20, title: '公司地址', page: 2 },
   ])
 
   return (
@@ -21,17 +21,17 @@ function PdfEdit() {
       pdfBoxes,
       setPdfBoxes
     }}>
-      <DndProvider backend={HTML5Backend}>
         <div
           style={{ 
             display: 'flex',
             flexDirection: 'row',
           }}
         >
-          <PdfViewer  />
-          <ConfigDrawer />
+          <DndProvider backend={HTML5Backend}>
+              <PdfViewer  />
+              <ConfigDrawer />
+          </DndProvider>
         </div>
-      </DndProvider>
     </PdfBoxesContext.Provider>
   );
 }
