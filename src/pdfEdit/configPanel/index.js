@@ -1,18 +1,16 @@
-import React, { useContext, useEffect } from 'react'
-import { PdfBoxesContext } from '../context/pdfBoxesContext';
+import React, {useEffect } from 'react'
 import { VarBox } from './varBox'
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export const ConfigDrawer = (props) => {
-  const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
-
-  // 模板变量
+export const ConfigDrawer = () => {
+  // 配置面板上的模板变量
   const [pdfVars, setPdfVars] = React.useState([])
 
   useEffect(() => {
+    // 模拟异步获取模板变量
     sleep(1000).then(() => {
       setPdfVars([
         { type: '企业信息', name: '合同主体',  value: 'packSubject', width: '100px' },
@@ -31,7 +29,7 @@ export const ConfigDrawer = (props) => {
       }}>
       {
         pdfVars.map((item) => {
-          return <VarBox key={item.name} pdfBoxes={pdfBoxes} setPdfBoxes={setPdfBoxes} name={item.name} />
+          return <VarBox key={item.name} name={item.name} />
         })
       }
     </div>

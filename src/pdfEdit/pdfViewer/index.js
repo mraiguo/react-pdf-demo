@@ -12,6 +12,7 @@ function PdfViewer(props) {
 
   const moveBox = useCallback(
     (id, left, top) => {
+      // 从 配置抽屉 中拖拽到 pdfViewer 时，id 为 undefined
       if (!id) {
         return
       }
@@ -31,8 +32,18 @@ function PdfViewer(props) {
       accept: ItemTypes.BOX,
       drop(item, monitor) {
         const delta = monitor.getDifferenceFromInitialOffset()
+        const { x, y } = monitor.getClientOffset()
         const left = Math.round(item.left + delta.x)
         const top = Math.round(item.top + delta.y)
+        console.log(1111, monitor.getClientOffset())
+
+        // 从配置面板拖动过来
+        if (item?.source === 'var') {
+          const name = item?.name
+          pdfBoxes[name] = { title: name, top: y, left: x }
+          setPdfBoxes(pdfBoxes)
+        }
+
         moveBox(item.id, left, top)
         return undefined
       },
