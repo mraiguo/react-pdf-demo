@@ -15,6 +15,9 @@ function PdfViewer(props) {
   const pdfPageRef = React.useRef(null)
   const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
 
+  /**
+   * pdf 内部的 box 移动更新位置
+   */
   const moveBox = useCallback(
     (id, left, top) => {
       // 从 配置抽屉 中拖拽到 pdfViewer 时，id 为 undefined
@@ -32,6 +35,7 @@ function PdfViewer(props) {
     [pdfBoxes, setPdfBoxes],
   )
 
+ 
   const [, pdfBoxDrop] = useDrop(
     () => ({
       accept: ItemTypes.BOX,
@@ -60,6 +64,9 @@ function PdfViewer(props) {
     }),
     [moveBox],
   )
+  /**
+   * end
+   */
 
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
@@ -89,6 +96,11 @@ function PdfViewer(props) {
       <div
         style={{
           flexGrow: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          height: '841px',
+          width: '595px',
+          overflowY: 'scroll',
         }}
       >
         <Document
@@ -97,7 +109,49 @@ function PdfViewer(props) {
           onLoadSuccess={onDocumentLoadSuccess}
           file={file}
         >
-            <Page
+          <div
+            style={{
+              position: 'relative',
+            }}
+            ref={(ref) => {
+              pdfPageRef.current = ref
+              return pdfBoxDrop(ref)
+            }}
+          >
+            {Array.from(
+              new Array(numPages),
+              (el, index) => {
+                return (
+                  <Page
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    renderTextLayer={false} // 不渲染文本选择层
+                    renderAnnotationLayer={false} // 不渲染注释层
+                  />
+                )
+              },
+            )}
+            {
+              Array.isArray(pdfBoxes) && Object.keys(pdfBoxes).map((key) => {
+                // TODO: 优化
+                const { left, top, title, width, page } = pdfBoxes[key]
+
+                return (
+                  <PdfVarBox
+                    page={page}
+                    key={key}
+                    id={key}
+                    left={left}
+                    top={top}
+                    width={width}
+                  >
+                    {title}
+                  </PdfVarBox>
+                )
+              })
+            }
+          </div>
+            {/* <Page
               // canvasRef={drop}
               inputRef={(ref) => {
                 pdfPageRef.current = ref
@@ -128,9 +182,9 @@ function PdfViewer(props) {
                   </PdfVarBox>
                 )
               })}
-            </Page>
+            </Page> */}
         </Document>
-        <div style={{ textAlign: 'center' }}>
+        {/* <div style={{ textAlign: 'center' }}>
           <p>
             <button
               onClick={() => {
@@ -150,7 +204,7 @@ function PdfViewer(props) {
           <p>
             Page {pageNumber} of {numPages}
           </p>
-        </div>
+        </div> */}
       </div>
   );
 }

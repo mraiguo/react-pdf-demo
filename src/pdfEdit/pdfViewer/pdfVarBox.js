@@ -17,28 +17,29 @@ const style = {
 /**
  * pdf上可拖拽的变量和印章
  */
-export const PdfVarBox = ({ id, left, top, width, hideSourceOnDrag, children }) => {
+export const PdfVarBox = ({ id, left, top, page = 1, width, hideSourceOnDrag, children }) => {
   const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
 
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: ItemTypes.BOX,
-      item: { id, left, top },
+      item: { id, left, top, page },
       hideSourceOnDrag: true,
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
     }),
-    [id, left, top],
+    [id, left, top, page],
   )
   if (isDragging && hideSourceOnDrag) {
     return <div ref={drag} />
   }
+
   return (
     <div
       className="box"
       ref={drag}
-      style={{ ...style, left, top, width }}
+      style={{ ...style, left, top: top + ((page - 1) * 841), width }}
       data-testid="box"
     >
       {children}

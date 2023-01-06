@@ -1,4 +1,5 @@
 import React from 'react'
+import useMergedState from 'rc-util/lib/hooks/useMergedState'
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -6,12 +7,12 @@ import PdfViewer from './pdfViewer/index.js';
 import { ConfigDrawer } from './configPanel/index.js';
 import { PdfBoxesContext } from './context/pdfBoxesContext.js';
 
-// TODO: 转换坐标为pdf坐标
+// TODO: 转换坐标为 pdf 坐标
 // TODO: 拖过去后内容稍微不跟随鼠标
 // TODO: 需要支持form表单的使用方式
 // TODO: 加载 pdf的loading态 
 // TODO: 滚动加载pdf
-// TODO: 可以拖拽变量改变变量宽度
+// TODO: 二期，可以拖拽变量改变变量宽度
 
 /**
  * @param {varsCoords} 变量坐标 
@@ -24,10 +25,16 @@ import { PdfBoxesContext } from './context/pdfBoxesContext.js';
  * sealCoords 为印章坐标
  */
 function PdfEdit(props) {
-  const [pdfBoxes, setPdfBoxes] = React.useState([
-    { top: 20, left: 80, title: '公司联系人', page: 1 },
-    { top: 180, left: 20, title: '公司地址', page: 2 },
-  ])
+  const { varsCoords, defaultVarCoords } = props
+
+  const [pdfBoxes, setPdfBoxes] = useMergedState(null, {
+    value: varsCoords,
+    defaultValue: defaultVarCoords,
+  })
+  // const [pdfBoxes, setPdfBoxes] = React.useState([
+  //   { top: 20, left: 80, title: '公司联系人', page: 1 },
+  //   { top: 180, left: 20, title: '公司地址', page: 2 },
+  // ])
 
   const { file } = props
 
@@ -45,8 +52,8 @@ function PdfEdit(props) {
           }}
         >
           <DndProvider backend={HTML5Backend}>
-              <PdfViewer file={file} />
-              <ConfigDrawer />
+            <PdfViewer file={file} />
+            <ConfigDrawer />
           </DndProvider>
         </div>
     </PdfBoxesContext.Provider>

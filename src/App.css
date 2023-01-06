@@ -1,10 +1,13 @@
 .react-pdf__Document {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  overflow-y: scroll;
 }
  
-.react-pdf__Page {
+/* .react-pdf__Page {
   display: inline-block;
   overflow: hidden;
   border: 1px solid #ccc;
-}
+} */
