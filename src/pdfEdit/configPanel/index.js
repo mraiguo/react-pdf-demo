@@ -10,7 +10,7 @@ export const ConfigDrawer = () => {
   const [pdfVars, setPdfVars] = React.useState([])
 
   useEffect(() => {
-    // 模拟异步获取模板变量
+    // 模拟异步获取模板变量配置信息
     sleep(1000).then(() => {
       setPdfVars([
         { type: '企业信息', name: '合同主体',  value: 'packSubject', width: '100px' },

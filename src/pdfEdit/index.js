@@ -6,6 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import PdfViewer from './pdfViewer/index.js';
 import { ConfigDrawer } from './configPanel/index.js';
 import { PdfBoxesContext } from './context/pdfBoxesContext.js';
+import { transPageToPdfCoords } from './utils.js';
 
 // TODO: 转换坐标为 pdf 坐标
 // TODO: 拖过去后内容稍微不跟随鼠标
@@ -25,18 +26,18 @@ import { PdfBoxesContext } from './context/pdfBoxesContext.js';
  * sealCoords 为印章坐标
  */
 function PdfEdit(props) {
-  const { varsCoords, defaultVarCoords } = props
+  const {
+    file,
+    varsCoords,
+    defaultVarCoords,
+    onChange,
+  } = props
+
 
   const [pdfBoxes, setPdfBoxes] = useMergedState(null, {
-    value: varsCoords,
-    defaultValue: defaultVarCoords,
+    value: transPageToPdfCoords(varsCoords),
+    defaultValue: transPageToPdfCoords(defaultVarCoords),
   })
-  // const [pdfBoxes, setPdfBoxes] = React.useState([
-  //   { top: 20, left: 80, title: '公司联系人', page: 1 },
-  //   { top: 180, left: 20, title: '公司地址', page: 2 },
-  // ])
-
-  const { file } = props
 
   return (
     <PdfBoxesContext.Provider
@@ -45,17 +46,17 @@ function PdfEdit(props) {
         setPdfBoxes
       }}
     >
-        <div
-          style={{ 
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
-          <DndProvider backend={HTML5Backend}>
-            <PdfViewer file={file} />
-            <ConfigDrawer />
-          </DndProvider>
-        </div>
+      <div
+        style={{ 
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <PdfViewer onChange={onChange} file={file} />
+          <ConfigDrawer />
+        </DndProvider>
+      </div>
     </PdfBoxesContext.Provider>
   );
 }

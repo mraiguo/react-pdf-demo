@@ -26,26 +26,10 @@ export const VarBox = function Box(props) {
       top: 0,
       width,
     },
-    // options: {
-    //   dropEffect: 'copy'
-    // },
-    // drop: (item, monitor) => {
-    //   // 获取拖拽结束后的坐标
-    //   const clientOffset = monitor.getClientOffset()
-    //   console.log(11111, clientOffset)
-
-    //   return monitor.getClientOffset();
-    //   // 根据坐标做一些事情，例如移动元素
-    // },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult()
-      // monitor.subscribeToOffsetChange(() => {
-      //   console.log(1111122, monitor.getClientOffset())
-      // })
       if (item && dropResult) {
         // alert(`You dropped ${item.name} into ${dropResult.name}!`)
-        // pdfBoxes[name] = { title: name, top: 0, left: 0 }
-        // setPdfBoxes(pdfBoxes)
       }
     },
     collect: (monitor) => ({

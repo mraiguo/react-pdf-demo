@@ -17,19 +17,19 @@ const style = {
 /**
  * pdf上可拖拽的变量和印章
  */
-export const PdfVarBox = ({ id, left, top, page = 1, width, hideSourceOnDrag, children }) => {
+export const PdfVarBox = ({ index, left, top, page = 1, width, hideSourceOnDrag, children }) => {
   const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
 
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: ItemTypes.BOX,
-      item: { id, left, top, page },
+      item: { index, left, top, page },
       hideSourceOnDrag: true,
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
     }),
-    [id, left, top, page],
+    [index, left, top, page],
   )
   if (isDragging && hideSourceOnDrag) {
     return <div ref={drag} />
@@ -50,7 +50,7 @@ export const PdfVarBox = ({ id, left, top, page = 1, width, hideSourceOnDrag, ch
         onClick={() => {
           setPdfBoxes(
             update(pdfBoxes, {
-              $splice: [[id, 1]],
+              $splice: [[index, 1]],
             }),
           )
         }}

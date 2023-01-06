@@ -3,7 +3,6 @@
   align-items: center;
   flex-direction: column;
   border: 1px solid #ccc;
-  overflow-y: scroll;
 }
  
 /* .react-pdf__Page {
