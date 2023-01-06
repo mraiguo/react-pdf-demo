@@ -7,7 +7,11 @@ import { ItemTypes } from '../ItemTypes';
 import { PdfVarBox } from './pdfVarBox';
 import { PdfBoxesContext } from '../context/pdfBoxesContext';
 
+/**
+ * pdf 显示区域
+ */
 function PdfViewer(props) {
+  const { file } = props
   const pdfPageRef = React.useRef(null)
   const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
 
@@ -82,14 +86,17 @@ function PdfViewer(props) {
   }
 
   return (
-      <div style={{
-        flexGrow: 1,
-      }}>
+      <div
+        style={{
+          flexGrow: 1,
+        }}
+      >
         <Document
           inputRef={drop}
           style={{ border: borderColor }}
           onLoadSuccess={onDocumentLoadSuccess}
-          file="https://aiguo-fuzhou.oss-cn-fuzhou.aliyuncs.com/%E4%BA%8C%E6%89%8B%E6%88%BF%E6%97%A0%E4%B8%AD%E4%BB%8B%E4%B9%B0%E5%8D%96%E5%90%88%E5%90%8C.pdf">
+          file={file}
+        >
             <Page
               // canvasRef={drop}
               inputRef={(ref) => {
