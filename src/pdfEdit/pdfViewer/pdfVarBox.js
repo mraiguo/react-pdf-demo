@@ -37,7 +37,6 @@ export const PdfVarBox = ({ index, left, top, page = 1, width, hideSourceOnDrag,
 
   return (
     <div
-      className="box"
       ref={drag}
       style={{ ...style, left, top: top + ((page - 1) * 841), width }}
       data-testid="box"

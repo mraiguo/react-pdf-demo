@@ -15,6 +15,9 @@ export function transPageToPdfCoords(pageCoords) {
   return pdfCoords
 }
 
+/**
+ * 把有 page 参数的坐标转换绝对位置的坐标
+ */
 export function transPdfToPageCoords(pdfCoords) {
   if (!pdfCoords) {
     return

@@ -32,7 +32,6 @@ function PdfViewer(props) {
     },
     [pdfBoxes, setPdfBoxes, onChange],
   )
-
  
   const [, pdfBoxDrop] = useDrop(
     () => ({
@@ -99,7 +98,6 @@ function PdfViewer(props) {
           justifyContent: 'center',
           height: '841px',
           width: '595px',
-          overflowY: 'scroll',
         }}
       >
         <Document
@@ -119,9 +117,8 @@ function PdfViewer(props) {
               return pdfBoxDrop(ref)
             }}
           >
-            {Array.from(
-              new Array(numPages),
-              (el, index) => {
+            {
+              Array.from(new Array(numPages), (el, index) => {
                 return (
                   <Page
                     key={`page_${index + 1}`}
@@ -130,8 +127,8 @@ function PdfViewer(props) {
                     renderAnnotationLayer={false} // 不渲染注释层
                   />
                 )
-              },
-            )}
+              })
+            }
             {
               Array.isArray(pdfBoxes) && Object.keys(pdfBoxes).map((key) => {
                 // TODO: 优化

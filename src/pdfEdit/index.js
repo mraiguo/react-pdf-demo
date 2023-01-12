@@ -12,7 +12,7 @@ import { transPageToPdfCoords } from './utils.js';
 // TODO: 拖过去后内容稍微不跟随鼠标
 // TODO: 需要支持form表单的使用方式
 // TODO: 加载 pdf的loading态 
-// TODO: 滚动加载pdf
+// TODO: pdf的高度为 841  正常是842
 // TODO: 二期，可以拖拽变量改变变量宽度
 
 /**
