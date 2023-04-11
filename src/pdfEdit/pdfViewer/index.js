@@ -14,7 +14,7 @@ import { transPdfToPageCoords } from '../utils';
 function PdfViewer(props) {
   const { file, onChange } = props
   const pdfPageRef = React.useRef(null)
-  const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
+  const { pdfBoxes = [], setPdfBoxes } = useContext(PdfBoxesContext)
 
   /**
    * pdf 内部的 box 移动更新位置
@@ -32,10 +32,14 @@ function PdfViewer(props) {
     },
     [pdfBoxes, setPdfBoxes, onChange],
   )
- 
+
   const [, pdfBoxDrop] = useDrop(
     () => ({
       accept: ItemTypes.BOX,
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
       drop(item, monitor) {
         const delta = monitor.getDifferenceFromInitialOffset()
         const { x, y } = monitor.getClientOffset()
@@ -69,25 +73,8 @@ function PdfViewer(props) {
 
   const [numPages, setNumPages] = useState(null);
 
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: ItemTypes.BOX,
-    drop: () => ({ name: 'Dustbin' }),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }))
-
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
-  }
-
-  const isActive = canDrop && isOver
-  let borderColor = '1px solid #222'
-  if (isActive) {
-    borderColor = '1px solid darkgreen'
-  } else if (canDrop) {
-    borderColor = '2px solid green'
   }
 
   return (
@@ -101,14 +88,12 @@ function PdfViewer(props) {
         }}
       >
         <Document
-          inputRef={drop}
           onLoadSuccess={onDocumentLoadSuccess}
           file={file}
         >
           <div
             style={{
               position: 'relative',
-              border: borderColor,
               overflowX: 'hidden',
               overflowY: 'scroll',
             }}

@@ -2,6 +2,7 @@ import React from 'react'
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import './App.css';
 import PdfEdit from './pdfEdit/index.js';
+import pdfFile from './150page.pdf'
 
 // todo: 支持拖动到 pdf 上
 // todo: 拖动到pdf上后，需要在pdf上一个副本
@@ -24,8 +25,8 @@ async function dataUrlToFile(dataUrl, fileName) {
 }
 
 function App() {
-  const file = 'https://aiguo-fuzhou.oss-cn-fuzhou.aliyuncs.com/%E4%BA%8C%E6%89%8B%E6%88%BF%E6%97%A0%E4%B8%AD%E4%BB%8B%E4%B9%B0%E5%8D%96%E5%90%88%E5%90%8C.pdf'
-  
+  const file = pdfFile
+
   const varsCoords = [
     { top: 20, left: 80, title: '默认-公司联系人', page: 1 },
     { top: 180, left: 20, title: '默认-公司地址', page: 2 },

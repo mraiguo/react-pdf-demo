@@ -11,13 +11,13 @@ import { transPageToPdfCoords } from './utils.js';
 // TODO: 转换坐标为 pdf 坐标
 // TODO: 拖过去后内容稍微不跟随鼠标
 // TODO: 需要支持form表单的使用方式
-// TODO: 加载 pdf的loading态 
+// TODO: 加载 pdf的loading态
 // TODO: pdf的高度为 841  正常是842
 // TODO: 二期，可以拖拽变量改变变量宽度
 
 /**
- * @param {varsCoords} 变量坐标 
- * @param {sealCoords} 印章坐标 
+ * @param {varsCoords} 变量坐标
+ * @param {sealCoords} 印章坐标
  * @param {pdf} pdf url 或者流
  * 参考 upload, 提供一个 onChange 事件，将坐标信息传递出去
  * 返回值为 { pdf, varsCoords, sealCoords }
@@ -47,7 +47,7 @@ function PdfEdit(props) {
       }}
     >
       <div
-        style={{ 
+        style={{
           display: 'flex',
           flexDirection: 'row',
         }}
