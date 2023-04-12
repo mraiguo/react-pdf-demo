@@ -7,6 +7,7 @@ import { ItemTypes } from '../ItemTypes';
 import { PdfVarBox } from './pdfVarBox';
 import { PdfBoxesContext } from '../context/pdfBoxesContext';
 import { transPdfToPageCoords } from '../utils';
+import { Dustbin } from './DragDropPage';
 
 /**
  * pdf 显示区域
@@ -42,6 +43,8 @@ function PdfViewer(props) {
       }),
       drop(item, monitor) {
         const delta = monitor.getDifferenceFromInitialOffset()
+        console.log('[ monitor ]:', monitor)
+
         const { x, y } = monitor.getClientOffset()
         const left = Math.round(item.left + delta.x)
         const top = Math.round(item.top + delta.y)
@@ -87,6 +90,7 @@ function PdfViewer(props) {
           width: '595px',
         }}
       >
+
         <Document
           onLoadSuccess={onDocumentLoadSuccess}
           file={file}
@@ -97,15 +101,12 @@ function PdfViewer(props) {
               overflowX: 'hidden',
               overflowY: 'scroll',
             }}
-            ref={(ref) => {
-              pdfPageRef.current = ref
-              return pdfBoxDrop(ref)
-            }}
           >
             {
               Array.from(new Array(numPages), (el, index) => {
                 return (
-                  <Page
+                  <Dustbin
+                    allowedDropEffect="any"
                     key={`page_${index + 1}`}
                     pageNumber={index + 1}
                     renderTextLayer={false} // 不渲染文本选择层
@@ -114,7 +115,7 @@ function PdfViewer(props) {
                 )
               })
             }
-            {
+            {/* {
               Array.isArray(pdfBoxes) && Object.keys(pdfBoxes).map((key) => {
                 // TODO: 优化
                 const { left, top, title, width } = pdfBoxes[key]
@@ -131,7 +132,7 @@ function PdfViewer(props) {
                   </PdfVarBox>
                 )
               })
-            }
+            } */}
           </div>
         </Document>
       </div>
