@@ -35,9 +35,11 @@ function PdfEdit(props) {
 
 
   const [pdfBoxes, setPdfBoxes] = useMergedState(null, {
-    value: transPageToPdfCoords(varsCoords) || [],
+    // value: transPageToPdfCoords(varsCoords),
     defaultValue: transPageToPdfCoords(defaultVarCoords) || [],
   })
+
+  // const [pdfBoxes, setPdfBoxes] = React.useState([])
 
   return (
     <PdfBoxesContext.Provider

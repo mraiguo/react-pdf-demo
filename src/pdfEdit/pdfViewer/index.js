@@ -7,6 +7,25 @@ import { getScrollbarWidth, asyncMap } from '../utils';
 
 const scrollbarWidth = getScrollbarWidth()
 
+const Row = ({ onChange }) => ({ index, style }) => {
+  function onPageRenderSuccess(page) {
+    console.log(`渲染了第${page.pageNumber}页`)
+  }
+
+  return (
+    <div style={style}>
+      <DragDropPage
+        onChange={onChange}
+        allowedDropEffect="any"
+        pageNumber={index + 1}
+        renderTextLayer={false} // 不渲染文本选择层
+        renderAnnotationLayer={false} // 不渲染注释层
+        onPageRenderSuccess={onPageRenderSuccess}
+      />
+    </div>
+  );
+}
+
 /**
  * pdf 显示区域
  */
@@ -14,9 +33,6 @@ function PdfViewer(props) {
   const { file, onChange } = props
   const [pdf, setPdf] = useState(null);
   const [pageViewports, setPageViewports] = useState(null);
-  const [pageHeight, setPageHeight] = useState(0)
-  const [pageWidth, setPageWidth] = useState(0)
-  console.log('[ pageViewports ]:', pageViewports)
 
   /**
    * React-Window cannot get item size using async getter, therefore we need to
@@ -43,39 +59,12 @@ function PdfViewer(props) {
     })();
   }, [pdf]);
 
-
-  function onDocumentLoadSuccess(pdf) {
-    setPdf(pdf)
-  }
-
-  function Row({ index, style }) {
-    function onPageRenderSuccess(page) {
-      setPageHeight(page.height)
-      setPageWidth(page.width)
-    }
-
-    return (
-      <div style={style}>
-        <DragDropPage
-          allowedDropEffect="any"
-          pageNumber={index + 1}
-          renderTextLayer={false} // 不渲染文本选择层
-          renderAnnotationLayer={false} // 不渲染注释层
-          onPageRenderSuccess={onPageRenderSuccess}
-        />
-      </div>
-    );
-  }
-
   function getPageHeight(pageIndex) {
     if (!pageViewports) {
-      throw new Error("getPageHeight() called too early");
+      throw new Error("getPageHeight 调用太早了");
     }
 
-    const pageViewport = pageViewports[pageIndex];
-    const actualHeight = pageViewport.height;
-
-    return actualHeight;
+    return pageViewports[pageIndex]?.height;;
   }
 
   return (
@@ -89,31 +78,25 @@ function PdfViewer(props) {
         }}
       >
         <Document
-          onLoadSuccess={onDocumentLoadSuccess}
+          onLoadSuccess={(pdf) => {
+            setPdf(pdf)
+          }}
           file={file}
         >
-          <div
-            style={{
-              position: 'relative',
-              // overflowX: 'hidden',
-              // overflowY: 'scroll',
-            }}
-          >
-            {
-              (pdf && pageViewports) ? (
-                <List
-                  width={pageWidth + scrollbarWidth}
-                  // width={595}
-                  height={pageHeight}
-                  estimatedItemSize={pageHeight}
-                  itemCount={pdf.numPages}
-                  itemSize={getPageHeight}
-                >
-                {Row}
+          {
+            (pdf && pageViewports) ? (
+              <List
+                width={pageViewports[0].width + scrollbarWidth}
+                // width={595}
+                height={pageViewports[0].height}
+                estimatedItemSize={pageViewports[0].height}
+                itemCount={pdf.numPages}
+                itemSize={getPageHeight}
+              >
+                {Row({ onChange })}
               </List>
-              ) : null
-            }
-          </div>
+            ) : null
+          }
         </Document>
       </div>
   );

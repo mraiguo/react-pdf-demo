@@ -49,9 +49,9 @@ function App() {
       <input
         type="file"
         onChange={async (e) => {
-        //  form.append('file', e.files);
-        const f = await toBase64(e.target.files[0])
-        const f1 = await dataUrlToFile(f, e.target.files[0].name)
+          //  form.append('file', e.files);
+          const f = await toBase64(e.target.files[0])
+          const f1 = await dataUrlToFile(f, e.target.files[0].name)
          setNativeFile(f1)
         }}
       />

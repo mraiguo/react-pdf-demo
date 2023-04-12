@@ -1,9 +1,11 @@
-import React, { useContext } from 'react'
+import React, { useContext, useCallback } from 'react'
+import update from 'immutability-helper'
 import { useDrop } from 'react-dnd'
 import { ItemTypes } from '../ItemTypes.js'
 import { PdfVarBox } from './pdfVarBox';
 import { PdfBoxesContext } from '../context/pdfBoxesContext';
 import { Page } from 'react-pdf/dist/esm/entry.webpack5';
+import { transPdfToPageCoords } from '../utils.js';
 
 const style = {
   position: 'relative',
@@ -11,11 +13,29 @@ const style = {
 
 export const DragDropPage = ({
   pageNumber,
+  onChange,
   onPageRenderSuccess
 }) => {
 
   const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
   const pageRef = React.useRef(null)
+
+  const moveBox = useCallback(
+    ({ index, left, top }) => {
+      const newPdfBoxes = update(pdfBoxes, {
+        [index]: {
+          $merge: { left, top },
+        },
+      })
+      console.log('[ newPdfBoxes ]:', newPdfBoxes)
+
+      setPdfBoxes(newPdfBoxes)
+      if (onChange) {
+        onChange(transPdfToPageCoords(newPdfBoxes))
+      }
+    },
+    [pdfBoxes, setPdfBoxes, onChange],
+  )
 
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
@@ -35,14 +55,17 @@ export const DragDropPage = ({
           const width = item?.width
           const left = Math.round(item.left + x - pdfViewerRect.x)
           const top = Math.round(item.top + y - pdfViewerRect.y)
-          pdfBoxes.push({ title: name, top, left, width, page: pageNumber })
-          setPdfBoxes(pdfBoxes)
+          const pdfBoxesRes = Array.isArray(pdfBoxes) ? pdfBoxes : []
+
+          pdfBoxesRes.push({ title: name, top, left, width, page: pageNumber })
+
+          setPdfBoxes(pdfBoxesRes)
 
           // onChange(transPdfToPageCoords(pdfBoxes))
           return
         }
 
-        // moveBox({ item, index:item.index, left, top })
+        moveBox({ item, index:item.index, left, top, page: pageNumber })
         return undefined
       },
       collect: (monitor) => ({
@@ -62,7 +85,6 @@ export const DragDropPage = ({
       style={{ ...style }}
     >
       <Page
-        // key={key}
         pageNumber={pageNumber}
         renderTextLayer={false} // 不渲染文本选择层
         renderAnnotationLayer={false} // 不渲染注释层
@@ -73,6 +95,7 @@ export const DragDropPage = ({
           // TODO: 优化
           const { left, top, title, width, page } = pdfBoxes[key]
 
+          // 只渲染当前页的变量
           if (page !== pageNumber) {
             return null
           }
