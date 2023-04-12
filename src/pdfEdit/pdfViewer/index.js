@@ -1,83 +1,81 @@
-import React, { useState, useCallback, useContext } from 'react'
-import update from 'immutability-helper'
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
+import React, { useState, useEffect } from 'react'
+import { Document } from 'react-pdf/dist/esm/entry.webpack5';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import { useDrop } from 'react-dnd'
-import { ItemTypes } from '../ItemTypes';
-import { PdfVarBox } from './pdfVarBox';
-import { PdfBoxesContext } from '../context/pdfBoxesContext';
-import { transPdfToPageCoords } from '../utils';
-import { Dustbin } from './DragDropPage';
+import { VariableSizeList as List } from "react-window";
+import { DragDropPage } from './DragDropPage';
+import { getScrollbarWidth, asyncMap } from '../utils';
+
+const scrollbarWidth = getScrollbarWidth()
 
 /**
  * pdf 显示区域
  */
 function PdfViewer(props) {
   const { file, onChange } = props
-  const pdfPageRef = React.useRef(null)
-  const { pdfBoxes = [], setPdfBoxes } = useContext(PdfBoxesContext)
+  const [pdf, setPdf] = useState(null);
+  const [pageViewports, setPageViewports] = useState(null);
+  const [pageHeight, setPageHeight] = useState(0)
+  const [pageWidth, setPageWidth] = useState(0)
+  console.log('[ pageViewports ]:', pageViewports)
 
   /**
-   * pdf 内部的 box 移动更新位置
+   * React-Window cannot get item size using async getter, therefore we need to
+   * calculate them ahead of time.
    */
-  const moveBox = useCallback(
-    ({ index, left, top }) => {
-      const newPdfBoxes = update(pdfBoxes, {
-        [index]: {
-          $merge: { left, top },
-        },
-      })
+  useEffect(() => {
+    setPageViewports(null);
 
-      setPdfBoxes(newPdfBoxes)
-      onChange(transPdfToPageCoords(newPdfBoxes))
-    },
-    [pdfBoxes, setPdfBoxes, onChange],
-  )
+    if (!pdf) {
+      return;
+    }
 
-  const [, pdfBoxDrop] = useDrop(
-    () => ({
-      accept: ItemTypes.BOX,
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
-      drop(item, monitor) {
-        const delta = monitor.getDifferenceFromInitialOffset()
-        console.log('[ monitor ]:', monitor)
+    (async () => {
+      const pageNumbers = Array.from(new Array(pdf.numPages)).map(
+        (_, index) => index + 1
+      );
 
-        const { x, y } = monitor.getClientOffset()
-        const left = Math.round(item.left + delta.x)
-        const top = Math.round(item.top + delta.y)
+      const nextPageViewports = await asyncMap(pageNumbers, (pageNumber) =>
+        pdf.getPage(pageNumber).then((page) => page.getViewport({ scale: 1 }))
+      );
 
-        const pdfViewerRect = pdfPageRef.current.getBoundingClientRect()
+      // 获取每一页的高度，宽度等信息
+      setPageViewports(nextPageViewports);
+    })();
+  }, [pdf]);
 
-        // 从配置面板拖动过来后，需要将配置面板中的数据同步到 pdfBoxes 中
-        if (item?.source === 'var') {
-          const name = item?.name
-          const width = item?.width
-          const left = Math.round(item.left + x - pdfViewerRect.x)
-          const top = Math.round(item.top + y - pdfViewerRect.y)
-          pdfBoxes.push({ title: name, top, left, width })
-          setPdfBoxes(pdfBoxes)
 
-          onChange(transPdfToPageCoords(pdfBoxes))
-          return
-        }
+  function onDocumentLoadSuccess(pdf) {
+    setPdf(pdf)
+  }
 
-        moveBox({ item, index:item.index, left, top })
-        return undefined
-      },
-    }),
-    [moveBox],
-  )
-  /**
-   * end
-   */
+  function Row({ index, style }) {
+    function onPageRenderSuccess(page) {
+      setPageHeight(page.height)
+      setPageWidth(page.width)
+    }
 
-  const [numPages, setNumPages] = useState(null);
+    return (
+      <div style={style}>
+        <DragDropPage
+          allowedDropEffect="any"
+          pageNumber={index + 1}
+          renderTextLayer={false} // 不渲染文本选择层
+          renderAnnotationLayer={false} // 不渲染注释层
+          onPageRenderSuccess={onPageRenderSuccess}
+        />
+      </div>
+    );
+  }
 
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
+  function getPageHeight(pageIndex) {
+    if (!pageViewports) {
+      throw new Error("getPageHeight() called too early");
+    }
+
+    const pageViewport = pageViewports[pageIndex];
+    const actualHeight = pageViewport.height;
+
+    return actualHeight;
   }
 
   return (
@@ -90,7 +88,6 @@ function PdfViewer(props) {
           width: '595px',
         }}
       >
-
         <Document
           onLoadSuccess={onDocumentLoadSuccess}
           file={file}
@@ -98,41 +95,24 @@ function PdfViewer(props) {
           <div
             style={{
               position: 'relative',
-              overflowX: 'hidden',
-              overflowY: 'scroll',
+              // overflowX: 'hidden',
+              // overflowY: 'scroll',
             }}
           >
             {
-              Array.from(new Array(numPages), (el, index) => {
-                return (
-                  <Dustbin
-                    allowedDropEffect="any"
-                    key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                    renderTextLayer={false} // 不渲染文本选择层
-                    renderAnnotationLayer={false} // 不渲染注释层
-                  />
-                )
-              })
+              (pdf && pageViewports) ? (
+                <List
+                  width={pageWidth + scrollbarWidth}
+                  // width={595}
+                  height={pageHeight}
+                  estimatedItemSize={pageHeight}
+                  itemCount={pdf.numPages}
+                  itemSize={getPageHeight}
+                >
+                {Row}
+              </List>
+              ) : null
             }
-            {/* {
-              Array.isArray(pdfBoxes) && Object.keys(pdfBoxes).map((key) => {
-                // TODO: 优化
-                const { left, top, title, width } = pdfBoxes[key]
-
-                return (
-                  <PdfVarBox
-                    index={key}
-                    key={key}
-                    left={left}
-                    top={top}
-                    width={width}
-                  >
-                    {title}
-                  </PdfVarBox>
-                )
-              })
-            } */}
           </div>
         </Document>
       </div>

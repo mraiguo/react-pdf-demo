@@ -4,24 +4,16 @@ import { ItemTypes } from '../ItemTypes.js'
 import { PdfVarBox } from './pdfVarBox';
 import { PdfBoxesContext } from '../context/pdfBoxesContext';
 import { Page } from 'react-pdf/dist/esm/entry.webpack5';
+
 const style = {
   position: 'relative',
 }
-function selectBackgroundColor(isActive, canDrop) {
-  if (isActive) {
-    return 'darkgreen'
-  } else if (canDrop) {
-    return 'darkkhaki'
-  } else {
-    return '#222'
-  }
-}
 
-export const Dustbin = ({
-  allowedDropEffect,
-  key,
-  pageNumber
+export const DragDropPage = ({
+  pageNumber,
+  onPageRenderSuccess
 }) => {
+
   const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
   const pageRef = React.useRef(null)
 
@@ -58,33 +50,29 @@ export const Dustbin = ({
         canDrop: monitor.canDrop(),
       }),
     }),
-    // [allowedDropEffect],
   )
 
-  const isActive = canDrop && isOver
-  const backgroundColor = selectBackgroundColor(isActive, canDrop)
-  console.log(pdfBoxes)
   return (
     <div
-      key={key}
+      key={pageNumber}
       ref={(ref) => {
         pageRef.current = ref
         return drop(ref)
       }}
-      style={{ ...style, backgroundColor }}
+      style={{ ...style }}
     >
-      {`Works with ${allowedDropEffect} drop effect`}
-      {isActive ? 'Release to drop' : 'Drag a box here'}
       <Page
-        key={key}
+        // key={key}
         pageNumber={pageNumber}
         renderTextLayer={false} // 不渲染文本选择层
         renderAnnotationLayer={false} // 不渲染注释层
+        onRenderSuccess={onPageRenderSuccess}
       />
       {
         Array.isArray(pdfBoxes) && Object.keys(pdfBoxes).map((key) => {
           // TODO: 优化
           const { left, top, title, width, page } = pdfBoxes[key]
+
           if (page !== pageNumber) {
             return null
           }
