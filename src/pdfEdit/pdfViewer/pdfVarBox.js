@@ -1,8 +1,7 @@
-import { useContext } from 'react';
 import { useDrag } from 'react-dnd'
 import update from 'immutability-helper'
 import { ItemTypes } from '../ItemTypes.js'
-import { PdfBoxesContext } from '../context/pdfBoxesContext';
+import { useStore } from '../context/useStore.js';
 
 const style = {
   position: 'absolute',
@@ -18,7 +17,7 @@ const style = {
  * pdf上可拖拽的变量和印章
  */
 export const PdfVarBox = ({ index, left, top, page = 1, width, hideSourceOnDrag, children }) => {
-  const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
+  const pdfBoxes = useStore((state) => state.pdfBoxes)
 
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -35,6 +34,14 @@ export const PdfVarBox = ({ index, left, top, page = 1, width, hideSourceOnDrag,
     return <div ref={drag} />
   }
 
+  const handleDelete = () => {
+    const newPdfBoxes = update(pdfBoxes, {
+      $splice: [[index, 1]],
+    })
+
+    useStore.setState({ pdfBoxes: newPdfBoxes })
+  }
+
   return (
     <div
       ref={drag}
@@ -46,13 +53,7 @@ export const PdfVarBox = ({ index, left, top, page = 1, width, hideSourceOnDrag,
         style={{
           cursor: 'pointer'
         }}
-        onClick={() => {
-          setPdfBoxes(
-            update(pdfBoxes, {
-              $splice: [[index, 1]],
-            }),
-          )
-        }}
+        onClick={handleDelete}
       >X</span>
     </div>
   )

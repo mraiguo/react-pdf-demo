@@ -4,6 +4,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { VariableSizeList as List } from "react-window";
 import { DragDropPage } from './DragDropPage';
 import { getScrollbarWidth, asyncMap } from '../utils';
+import { useStore } from '../index';
 
 const scrollbarWidth = getScrollbarWidth()
 
@@ -30,6 +31,8 @@ const Row = ({ onChange }) => ({ index, style }) => {
  * pdf 显示区域
  */
 function PdfViewer(props) {
+
+
   const { file, onChange } = props
   const [pdf, setPdf] = useState(null);
   const [pageViewports, setPageViewports] = useState(null);

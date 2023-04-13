@@ -1,11 +1,12 @@
-import React, { useContext, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import update from 'immutability-helper'
 import { useDrop } from 'react-dnd'
 import { ItemTypes } from '../ItemTypes.js'
 import { PdfVarBox } from './pdfVarBox';
-import { PdfBoxesContext } from '../context/pdfBoxesContext';
+import { useStore } from '../context/useStore.js';
 import { Page } from 'react-pdf/dist/esm/entry.webpack5';
 import { transPdfToPageCoords } from '../utils.js';
+
 
 const style = {
   position: 'relative',
@@ -16,28 +17,27 @@ export const DragDropPage = ({
   onChange,
   onPageRenderSuccess
 }) => {
+  const pdfBoxes = useStore((state) => state.pdfBoxes)
 
-  const { pdfBoxes, setPdfBoxes } = useContext(PdfBoxesContext)
   const pageRef = React.useRef(null)
 
   const moveBox = useCallback(
     ({ index, left, top }) => {
-      console.log('[ index ]:', index)
       pdfBoxes[index] = { ...pdfBoxes[index], left, top }
 
-      // 使用这个 pdfBoxes 会形成闭包，导致拖动两个元素时另一个元素会变成之前的状态
-      // const newPdfBoxes = update(pdfBoxes, {
-      //   [index]: {
-      //     $merge: { left, top },
-      //   },
-      // })
+      const newPdfBoxes = update(pdfBoxes, {
+        [index]: {
+          $merge: { left, top },
+        },
+      })
 
-      setPdfBoxes(pdfBoxes)
+      useStore.setState({ pdfBoxes: newPdfBoxes })
+
       if (onChange) {
-        onChange(transPdfToPageCoords(pdfBoxes))
+        onChange(transPdfToPageCoords(newPdfBoxes))
       }
     },
-    [pdfBoxes, setPdfBoxes, onChange],
+    [pdfBoxes, onChange],
   )
 
   const [{ canDrop, isOver }, drop] = useDrop(
@@ -58,11 +58,12 @@ export const DragDropPage = ({
           const width = item?.width
           const left = Math.round(item.left + x - pdfViewerRect.x)
           const top = Math.round(item.top + y - pdfViewerRect.y)
-          const pdfBoxesRes = Array.isArray(pdfBoxes) ? pdfBoxes : []
 
-          pdfBoxesRes.push({ title: name, top, left, width, page: pageNumber })
+          const newPdfBoxesRes = update(pdfBoxes, {
+            $push: [{ title: name, top, left, width, page: pageNumber }],
+          })
 
-          setPdfBoxes(pdfBoxesRes)
+          useStore.setState({ pdfBoxes: newPdfBoxesRes })
 
           if (onChange) {
             onChange(transPdfToPageCoords(pdfBoxes))
@@ -79,8 +80,11 @@ export const DragDropPage = ({
         canDrop: monitor.canDrop(),
       }),
     }),
+    // 需要加这个，否则 pdfBoxes 会被闭包变成旧值
+    [pdfBoxes]
   )
 
+  console.log('dragDropPage render')
 
   return (
     <div
