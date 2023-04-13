@@ -22,16 +22,19 @@ export const DragDropPage = ({
 
   const moveBox = useCallback(
     ({ index, left, top }) => {
-      const newPdfBoxes = update(pdfBoxes, {
-        [index]: {
-          $merge: { left, top },
-        },
-      })
-      console.log('[ newPdfBoxes ]:', newPdfBoxes)
+      console.log('[ index ]:', index)
+      pdfBoxes[index] = { ...pdfBoxes[index], left, top }
 
-      setPdfBoxes(newPdfBoxes)
+      // 使用这个 pdfBoxes 会形成闭包，导致拖动两个元素时另一个元素会变成之前的状态
+      // const newPdfBoxes = update(pdfBoxes, {
+      //   [index]: {
+      //     $merge: { left, top },
+      //   },
+      // })
+
+      setPdfBoxes(pdfBoxes)
       if (onChange) {
-        onChange(transPdfToPageCoords(newPdfBoxes))
+        onChange(transPdfToPageCoords(pdfBoxes))
       }
     },
     [pdfBoxes, setPdfBoxes, onChange],
@@ -61,11 +64,14 @@ export const DragDropPage = ({
 
           setPdfBoxes(pdfBoxesRes)
 
-          // onChange(transPdfToPageCoords(pdfBoxes))
+          if (onChange) {
+            onChange(transPdfToPageCoords(pdfBoxes))
+          }
           return
         }
 
         moveBox({ item, index:item.index, left, top, page: pageNumber })
+
         return undefined
       },
       collect: (monitor) => ({
@@ -74,6 +80,7 @@ export const DragDropPage = ({
       }),
     }),
   )
+
 
   return (
     <div

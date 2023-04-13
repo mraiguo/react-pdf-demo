@@ -67,6 +67,8 @@ function PdfViewer(props) {
     return pageViewports[pageIndex]?.height;;
   }
 
+  console.log('pdfViewer render')
+
   return (
       <div
         style={{

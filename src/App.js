@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import './App.css';
 import PdfEdit from './pdfEdit/index.js';
@@ -34,6 +34,10 @@ function App() {
 
   const [nativeFile, setNativeFile] = React.useState(null)
 
+  const handleChange = useCallback((v) => {
+    console.log('onChange:', v)
+  }, [])
+
   return (
     <div className="App" style={{
       width: '100%',
@@ -42,9 +46,7 @@ function App() {
         defaultVarCoords={varsCoords}
         file={file}
         // file={nativeFile} // 测试base64转换文件
-        onChange={(v) => {
-          console.log('onChange:', v)
-        }}
+        onChange={handleChange}
       />
       <input
         type="file"
