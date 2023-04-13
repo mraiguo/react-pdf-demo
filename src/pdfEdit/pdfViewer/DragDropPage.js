@@ -18,6 +18,7 @@ export const DragDropPage = ({
   onPageRenderSuccess
 }) => {
   const pdfBoxes = useStore((state) => state.pdfBoxes)
+  const searchText = useStore((state) => state.searchText)
 
   const pageRef = React.useRef(null)
 
@@ -97,9 +98,18 @@ export const DragDropPage = ({
     >
       <Page
         pageNumber={pageNumber}
-        renderTextLayer={false} // 不渲染文本选择层
+        renderTextLayer // 不渲染文本选择层
         renderAnnotationLayer={false} // 不渲染注释层
         onRenderSuccess={onPageRenderSuccess}
+        customTextRenderer={({ str }) => {
+          let text = str
+
+          if (searchText) {
+            console.log('[ searchText ]:', searchText)
+            text = text.replace(searchText, () => `<div style='color: red'">${searchText}</div>`)
+          }
+          return text
+        }}
       />
       {
         Array.isArray(pdfBoxes) && Object.keys(pdfBoxes).map((key) => {

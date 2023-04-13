@@ -4,7 +4,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { VariableSizeList as List } from "react-window";
 import { DragDropPage } from './DragDropPage';
 import { getScrollbarWidth, asyncMap } from '../utils';
-import { useStore } from '../index';
+import { useStore } from '../context/useStore';
 
 const scrollbarWidth = getScrollbarWidth()
 
@@ -34,7 +34,7 @@ function PdfViewer(props) {
 
 
   const { file, onChange } = props
-  const [pdf, setPdf] = useState(null);
+  const pdfDocument = useStore(state => state.pdfDocument);
   const [pageViewports, setPageViewports] = useState(null);
 
   /**
@@ -44,23 +44,25 @@ function PdfViewer(props) {
   useEffect(() => {
     setPageViewports(null);
 
-    if (!pdf) {
+    if (!pdfDocument) {
       return;
     }
 
     (async () => {
-      const pageNumbers = Array.from(new Array(pdf.numPages)).map(
+      const pageNumbers = Array.from(new Array(pdfDocument.numPages)).map(
         (_, index) => index + 1
       );
 
       const nextPageViewports = await asyncMap(pageNumbers, (pageNumber) =>
-        pdf.getPage(pageNumber).then((page) => page.getViewport({ scale: 1 }))
+        pdfDocument.getPage(pageNumber).then((page) => {
+          return page.getViewport({ scale: 1 })
+        })
       );
 
       // 获取每一页的高度，宽度等信息
       setPageViewports(nextPageViewports);
     })();
-  }, [pdf]);
+  }, [pdfDocument]);
 
   function getPageHeight(pageIndex) {
     if (!pageViewports) {
@@ -83,19 +85,19 @@ function PdfViewer(props) {
         }}
       >
         <Document
-          onLoadSuccess={(pdf) => {
-            setPdf(pdf)
+          onLoadSuccess={(pdfDocument) => {
+            useStore.setState({ pdfDocument })
           }}
           file={file}
         >
           {
-            (pdf && pageViewports) ? (
+            (pdfDocument && pageViewports) ? (
               <List
                 width={pageViewports[0].width + scrollbarWidth}
                 // width={595}
                 height={pageViewports[0].height}
                 estimatedItemSize={pageViewports[0].height}
-                itemCount={pdf.numPages}
+                itemCount={pdfDocument.numPages}
                 itemSize={getPageHeight}
               >
                 {Row({ onChange })}

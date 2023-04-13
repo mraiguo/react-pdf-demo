@@ -7,6 +7,8 @@ import PdfViewer from './pdfViewer/index.js';
 import { ConfigDrawer } from './configPanel/index.js';
 import { transPageToPdfCoords } from './utils.js';
 import { useStore } from './context/useStore.js';
+import { debounce } from 'lodash-es'
+import SearchText from './searchText.js';
 
 // TODO: 转换坐标为 pdf 坐标
 // TODO: 拖过去后内容稍微不跟随鼠标
@@ -14,8 +16,6 @@ import { useStore } from './context/useStore.js';
 // TODO: 加载 pdf的loading态
 // TODO: pdf的高度为 841  正常是842
 // TODO: 二期，可以拖拽变量改变变量宽度
-
-
 
 /**
  * @param {varsCoords} 变量坐标
@@ -35,32 +35,35 @@ function PdfEdit(props) {
     onChange,
   } = props
 
+
   if (Array.isArray(varsCoords)) {
     useStore.setState({
       pdfBoxes: transPageToPdfCoords(varsCoords) || [],
+      pdfDocument: null
     })
   }
-
-
 
   // const [pdfBoxes, setPdfBoxes] = useMergedState(null, {
     // value: transPageToPdfCoords(varsCoords),
     // defaultValue: transPageToPdfCoords(defaultVarCoords) || [],
   // })
 
-
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-      }}
-    >
-      <DndProvider backend={HTML5Backend}>
-        <PdfViewer onChange={onChange} file={file} />
-        <ConfigDrawer />
-      </DndProvider>
+    <div>
+      <SearchText />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <PdfViewer onChange={onChange} file={file} />
+          <ConfigDrawer />
+        </DndProvider>
+      </div>
     </div>
+
   );
 }
 
